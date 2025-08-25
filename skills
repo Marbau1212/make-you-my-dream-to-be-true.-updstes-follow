@@ -1,1 +1,21 @@
 nachfolgendes ist ausschliesslich zu schulungszwecken und darf keinesfalls zu illegalen aktivitäten genutzt werden.
+
+Setup:
+testphone (costum "root" android 14 firmware, termux 0.119.0 von github) 
+
+das testphone hat eine (nur 3g, nur UMTS) zum abgeschotteten testnetzwerk
+
+Vorgehen/Ablauf
+
+⚠️es ist wichtig zu verstehen dass ich, aus verantwortungsbewusstsein, nicht auf jeden befehl eingehe der zur ausführung nötig sind eingehe.  
+Alo...
+termux 0.119.0 auf dem testphone starten. Um die benötigten berechtigungen zu erhalten sind mehrere "sudo pm grant com.termux <premission>"  befehle sowie "sudo setenforce 0" nötwendig.
+
+anschliessend mit "sudo socat TCP-LISTEN:12345,fork UNIX-CONNECT:/dev/socket/imsd" den ims daemon über port 12345 umleiten. 
+
+new session (2. bildschirm)
+Dan grafisches wireschark starten: "tsu, cd, vncserver :1, export DISPLAY=:1 && wireshark -i <rmnet_data0 oder rmnet_ipa0, später mehr dazu>"
+
+jetzt mit RVNC app einloggen und den port==12345 setzten und aufzeichnung starten.
+
+
