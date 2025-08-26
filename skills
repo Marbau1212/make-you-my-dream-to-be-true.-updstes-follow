@@ -18,4 +18,22 @@ Dan grafisches wireschark starten: "tsu, cd, vncserver :1, export DISPLAY=:1 && 
 
 jetzt mit RVNC app einloggen und den port==12345 setzten und aufzeichnung starten.
 
+jetzt einen kurzen telefonanruf starten und gleich wieder beenden, denn es sind nur daten der "erreichbarkeitsabfrage" die vor dem eigentlichen rufaufbau stattfindet notwendig. 
 
+nun in wireshark die aufzeichnung in capture.pcapng speichern. 
+
+
+
+grundsätzlich sind nun in der capture.pcapng datenzätze der 2 caller die an der erreichbarkeitsabfrage beteiligt waren zu finden.
+
+die art der datensätze hängt vom benutzten interface bei der wireshark aufzeichnung ab. 
+
+rmnet_ipa0
+mit diesem interface hauptsächlich ip und netzwerkanalyse
+
+rmnet_data0
+hauptsächlich SIP und standortdaten. z.B. die triangulations daten der beiden caller.
+
+
+
+⚠️⚠️⚠️ DIES DARF NUR ZU SCHULUNGSZWECKEN GENUTZT WERDEN⚠️⚠️⚠️
