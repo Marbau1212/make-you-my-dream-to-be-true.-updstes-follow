@@ -1,8 +1,8 @@
 # GitHub Copilot Anleitung
 
 ## Voraussetzungen
-- GitHub CLI (`gh`) ist bereits installiert ✓
-- Sie sind bereits angemeldet ✓
+- [x] GitHub CLI (`gh`) ist bereits installiert
+- [x] Sie sind bereits angemeldet
 
 ## GitHub Copilot mit gh CLI verwenden
 
