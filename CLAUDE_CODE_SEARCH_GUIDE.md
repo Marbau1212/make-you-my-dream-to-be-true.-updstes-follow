@@ -157,7 +157,7 @@ gh search repos claude-code --web
 
 ## Tips for Termux Users
 
-1. **Check for ARM compatibility:** Many Claude Code implementations work on ARM architecture (used by Android/Termux)
+1. **Check for ARM64 compatibility:** Many Claude Code implementations work on ARM64 (aarch64) architecture used by modern Android devices running Termux
 
 2. **Look for lightweight implementations:** Python and Go-based tools usually work well in Termux
 
