@@ -172,6 +172,7 @@ def handle_dns_query(data, addr, server_socket):
 
 def dns_server_loop():
     while True:
+        server_socket = None
         try:
             server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -192,6 +193,9 @@ def dns_server_loop():
         except Exception as e:
             logging.error(f"DNS Server Crash, Neustart in 5s: {e}")
             time.sleep(5)
+        finally:
+            if server_socket:
+                server_socket.close()
 
 
 # --- WEB DASHBOARD (FLASK) ---
@@ -359,11 +363,12 @@ def cache_cleanup_loop():
         time.sleep(300)
         now = time.time()
         with cache_lock:
-            expired = [k for k, v in DNS_CACHE.items() if v["expires"] <= now]
-            for k in expired:
-                del DNS_CACHE[k]
-        if expired:
-            logging.info(f"Cache-Cleanup: {len(expired)} abgelaufene Einträge entfernt.")
+            fresh = {k: v for k, v in DNS_CACHE.items() if v["expires"] > now}
+            removed = len(DNS_CACHE) - len(fresh)
+            DNS_CACHE.clear()
+            DNS_CACHE.update(fresh)
+        if removed:
+            logging.info(f"Cache-Cleanup: {removed} abgelaufene Einträge entfernt.")
 
 
 def backup_loop():
