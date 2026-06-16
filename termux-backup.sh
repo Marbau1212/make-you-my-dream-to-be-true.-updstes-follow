@@ -20,12 +20,13 @@ NC='\033[0m' # No Color
 
 info()    { echo -e "${GREEN}[INFO]${NC}  $*"; }
 warn()    { echo -e "${YELLOW}[WARN]${NC}  $*"; }
-error()   { echo -e "${RED}[ERROR]${NC} $*" >&2; }
+error()   { echo -e "${RED}[ERROR]${NC}  $*" >&2; }
 
 # --- Speicherzugriff prüfen ---
-if [ ! -d "/sdcard" ]; then
-    warn "Kein Zugriff auf /sdcard. Bitte 'termux-setup-storage' ausführen."
-    warn "Alternativ ein anderes Zielverzeichnis angeben: bash termux-backup.sh /data/data/com.termux/files/home/backup"
+if [ "${BACKUP_DIR}" = "/sdcard/termux-backups" ] && [ ! -d "/sdcard" ]; then
+    error "Kein Zugriff auf /sdcard. Bitte zuerst 'termux-setup-storage' ausführen"
+    error "oder ein anderes Ziel angeben: bash termux-backup.sh ~/backup"
+    exit 1
 fi
 
 # --- Zielverzeichnis erstellen ---
@@ -37,13 +38,15 @@ echo ""
 
 # --- Home-Verzeichnis sichern (~) ---
 info "Sichere Home-Verzeichnis (~) ..."
-tar \
+if ! tar \
     --exclude="${HOME}/backup" \
     --exclude="${HOME}/.cache" \
     -czf "${BACKUP_FILE}" \
     -C "$(dirname "$HOME")" \
-    "$(basename "$HOME")" \
-    2>/dev/null || { error "Backup des Home-Verzeichnisses fehlgeschlagen."; exit 1; }
+    "$(basename "$HOME")"; then
+    error "Backup des Home-Verzeichnisses fehlgeschlagen. Berechtigungen und Speicherplatz prüfen."
+    exit 1
+fi
 
 BACKUP_SIZE="$(du -sh "${BACKUP_FILE}" | cut -f1)"
 info "Home-Backup erstellt: ${BACKUP_FILE} (${BACKUP_SIZE})"
@@ -52,12 +55,14 @@ info "Home-Backup erstellt: ${BACKUP_FILE} (${BACKUP_SIZE})"
 PREFIX="${PREFIX:-/data/data/com.termux/files/usr}"
 if [ -d "${PREFIX}" ]; then
     info "Sichere Termux-Prefix (installierte Pakete) ..."
-    tar \
+    if ! tar \
         --exclude="${PREFIX}/tmp" \
         -czf "${PREFIX_BACKUP}" \
         -C "$(dirname "$PREFIX")" \
-        "$(basename "$PREFIX")" \
-        2>/dev/null || { warn "Prefix-Backup fehlgeschlagen (ggf. fehlende Berechtigungen)."; }
+        "$(basename "$PREFIX")"; then
+        warn "Prefix-Backup fehlgeschlagen. Ggf. fehlen Root-Berechtigungen für \$PREFIX."
+        rm -f "${PREFIX_BACKUP}"
+    fi
 
     if [ -f "${PREFIX_BACKUP}" ]; then
         PREFIX_SIZE="$(du -sh "${PREFIX_BACKUP}" | cut -f1)"
@@ -78,5 +83,5 @@ echo ""
 echo "-----------------------------------------------------------"
 echo "Wiederherstellung (Restore):"
 echo "  Home   : tar -xzf ${BACKUP_FILE} -C \$(dirname \"\$HOME\")"
-echo "  Prefix : tar -xzf ${PREFIX_BACKUP} -C \$(dirname \"\$PREFIX\")"
+[ -f "${PREFIX_BACKUP}" ] && echo "  Prefix : tar -xzf ${PREFIX_BACKUP} -C \$(dirname \"\$PREFIX\")"
 echo "-----------------------------------------------------------"
