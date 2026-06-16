@@ -37,3 +37,30 @@ hauptsächlich SIP und standortdaten. z.B. die triangulations daten der beiden c
 
 
 ⚠️⚠️⚠️ DIES DARF NUR ZU SCHULUNGSZWECKEN GENUTZT WERDEN⚠️⚠️⚠️
+
+
+
+---
+
+Termux Home Backup
+==================
+
+Voraussetzung: Speicherzugriff einmalig freischalten
+  termux-setup-storage
+
+Backup erstellen (Home + installierte Pakete):
+  bash termux-backup.sh
+  # Standard-Ziel: /sdcard/termux-backups/
+  # Eigenes Ziel:  bash termux-backup.sh /sdcard/mein-backup-ordner
+
+Was wird gesichert:
+  - ~/            (Home-Verzeichnis, ohne .cache)
+  - $PREFIX/      (installierte Pakete/Binaries, ohne tmp)
+
+Backup-Dateien:
+  termux-home_YYYY-MM-DD_HH-MM-SS.tar.gz
+  termux-prefix_YYYY-MM-DD_HH-MM-SS.tar.gz
+
+Wiederherstellen:
+  tar -xzf termux-home_*.tar.gz   -C /data/data/com.termux/files/
+  tar -xzf termux-prefix_*.tar.gz -C /data/data/com.termux/files/
